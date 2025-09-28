@@ -13,8 +13,8 @@ A simple desktop web application built with **Create React App (CRA)** that lets
 ## 🚀 Demo
 
 Check out the live demo:  
-[👉 **usePopcorn Live Demo**](https://your-vercel-demo-link.vercel.app)
-
+[👉 **usePopcorn Live Demo**](https://use-popcorn-phi-six.vercel.app/)
+## still on static version
 ---
 
 ## 🛠️ Tech Stack
