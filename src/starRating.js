@@ -27,17 +27,10 @@ export default function StarRating({
     size = 48,
     className = "",
     messages = [],
-    defaltRating = 0,
+    defaultRating = 0,
     onSetRating,
 }) {
-    const textStyle = {
-        lineHeight: '1',
-        margin: '0',
-        color,
-        fontSize: `${size / 1.5}px`,
-    }
-
-    const [rating, setRating] = useState(defaltRating);
+    const [rating, setRating] = useState(defaultRating);
     const [tempRating, setTempRating] = useState(0);
 
     function handleRating(rating) {
@@ -45,9 +38,16 @@ export default function StarRating({
         onSetRating(rating);
     }
 
+    const textStyle = {
+        lineHeight: '1',
+        margin: '0',
+        color,
+        fontSize: `${size / 1.5}px`,
+    }
+
     return (
         <>
-            <div style={sontainerStyle}>
+            <div style={sontainerStyle} className={className}>
                 <div style={starContainerStyle}>
                     {Array.from({ length: maxRating }, (_, i) => (
                         <Star
@@ -60,7 +60,7 @@ export default function StarRating({
                             size={size}
                         />
                     ))}
-                    <p style={textStyle}>{tempRating || rating || ""}</p>
+                    <p style={textStyle}>{messages.length === maxRating ? messages[tempRating ? tempRating - 1 : rating - 1] : tempRating || rating || ""}</p>
                 </div>
             </div>
         </>
