@@ -48,3 +48,5 @@ npm start
 - Add/remove items in your Watch List
 - Rate and update ratings for watched movies
 - Fetches all data using a public API
+
+## To be continued...
