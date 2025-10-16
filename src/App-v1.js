@@ -50,16 +50,9 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const key = 'a062c83d';
-
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-
-  fetch(`https://www.omdbapi.com/?apikey=${key}&s=interstellar`)
-    .then(res => res.json())
-    .then(data => console.log(data));
-
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
   return (
     <>
       <Navbar>
@@ -68,13 +61,20 @@ export default function App() {
       </Navbar>
 
       <Main>
+        {/* <Box element={<MovieList movies={movies} />} />
+        <Box element={
+          <>
+            <WatchedSummary watched={watched} />
+            <WatchedMovieList watched={watched} />
+          </>
+        } /> */}
         <Box>
           <MovieList movies={movies} />
         </Box>
 
         <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
+            <WatchedSummary watched={watched} />
+            <WatchedMovieList watched={watched} />
         </Box>
       </Main>
     </>
@@ -186,7 +186,7 @@ function Movie({ movie }) {
 
 
 
-function WatchedSummary({ watched }) {
+function WatchedSummary({ watched  }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
   const avgRuntime = average(watched.map((movie) => movie.runtime));
