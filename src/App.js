@@ -61,7 +61,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const query = "jncxsczxk";
+  const query = "interstellar";
 
   useEffect(function () {
     async function fetchMovies() {
