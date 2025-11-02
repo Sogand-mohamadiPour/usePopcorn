@@ -60,18 +60,20 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+  const tempQuery = "interstellar";
 
-  const query = "interstellar";
 
   useEffect(function () {
     async function fetchMovies() {
       try {
         setIsLoading(true);
+        setError("");
         const res = await fetch(`https://www.omdbapi.com/?apikey=${key}&s=${query}`);
         if (!res.ok)
           throw new Error("something went wrong with fetching movies");
         const data = await res.json()
-        if(data.Response === "False") throw new Error("Movie not found");
+        if (data.Response === "False") throw new Error("Movie not found");
         setMovies(data.Search || [])
       } catch (err) {
         console.error(err.message);
@@ -80,13 +82,18 @@ export default function App() {
         setIsLoading(false);
       }
     }
+    if (query.length < 3) {
+      setMovies([]);
+      setError("");
+      return;
+    }
     fetchMovies();
-  }, []);
+  }, [query]);
 
   return (
     <>
       <Navbar>
-        <Serach />
+        <Serach query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
 
@@ -139,8 +146,7 @@ function Logo() {
   )
 }
 
-function Serach() {
-  const [query, setQuery] = useState("");
+function Serach({ query, setQuery }) {
   return (
     <>
       <input
