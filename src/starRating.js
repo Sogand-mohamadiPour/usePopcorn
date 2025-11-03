@@ -1,7 +1,7 @@
 import { useState } from "react"
-import PropTpes from "prop-types";
+import PropTypes from "prop-types";
 
-const sontainerStyle = {
+const containerStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: '16px',
@@ -11,14 +11,14 @@ const starContainerStyle = {
     display: 'flex',
 }
 
-StarRating.propTpes = {
-    maxRating: PropTpes.number,
-    defaltRating: PropTpes.number,
-    color: PropTpes.string,
-    size: PropTpes.number,
-    messages: PropTpes.array,
-    className: PropTpes.string,
-    onSetRating: PropTpes.func,
+StarRating.propTypes = {
+    maxRating: PropTypes.number,
+    defaultRating: PropTypes.number,
+    color: PropTypes.string,
+    size: PropTypes.number,
+    messages: PropTypes.array,
+    className: PropTypes.string,
+    onSetRating: PropTypes.func,
 };
 
 export default function StarRating({
@@ -35,7 +35,7 @@ export default function StarRating({
 
     function handleRating(rating) {
         setRating(rating);
-        onSetRating(rating);
+        onSetRating?.(rating);
     }
 
     const textStyle = {
@@ -47,7 +47,7 @@ export default function StarRating({
 
     return (
         <>
-            <div style={sontainerStyle} className={className}>
+            <div style={containerStyle} className={className}>
                 <div style={starContainerStyle}>
                     {Array.from({ length: maxRating }, (_, i) => (
                         <Star
