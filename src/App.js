@@ -255,6 +255,7 @@ function Movie({ movie, onSelectMovie }) {
 function MovieDetails({ selectedId, onCloseMovie }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const {
     Title: title,
@@ -269,31 +270,48 @@ function MovieDetails({ selectedId, onCloseMovie }) {
     Genre: genre,
   } = movie;
 
-  console.log(title, year)
-
   useEffect(function () {
+    const controller = new AbortController();
     async function getMovieDetails() {
-      setIsLoading(true);
-      const res = await fetch(
-        `https://www.omdbapi.com/?apikey=${key}&i=${selectedId}`
-      );
-      const data = await res.json();
-      setMovie(data);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        setError("");
+        setMovie({});
+        const res = await fetch(
+          `https://www.omdbapi.com/?apikey=${key}&i=${selectedId}`,
+          { signal: controller.signal }
+        );
+        if (!res.ok)
+          throw new Error("something went wrong with showing movie details");
+        const data = await res.json();
+        if (data.Response === "False") throw new Error("Movie details not found");
+        setMovie(data);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error(err.message);
+          setError(err.message);
+        }
+      }
+      finally { setIsLoading(false); }
     }
     getMovieDetails();
+    return function cleanup() {
+      controller.abort();
+    }
   }, [selectedId])
 
   return (
     <>
-      {isLoading ? <Loader /> :
+      {isLoading && <Loader />}
+      {error && <ErrorMessage message={error} />}
+      {!isLoading && !error && (
         <div className="details">
           <header>
             <button
               className="btn-back"
               onClick={onCloseMovie}>&larr;
             </button>
-            <img src={poster} alt={`Poster of ${movie} movie`} />
+            {poster && <img src={poster} alt={`Poster of ${title} movie`} />}
             <div className="details-overview">
               <h2>{title}</h2>
               <p>
@@ -316,7 +334,7 @@ function MovieDetails({ selectedId, onCloseMovie }) {
             <p>Directed by {director}</p>
           </section>
         </div>
-      }
+      )}
     </>
   )
 }
