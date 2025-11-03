@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import StarRating from "./StarRating";
+import StarRating from "./starRating";
 
 // const tempMovieData = [
 //   {
