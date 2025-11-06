@@ -73,6 +73,7 @@ export default function App() {
         setIsLoading(false);
       }
     }
+    
     // Only fetch if query length is 3 or more
     if (query.length < 3) {
       setMovies([]);
@@ -82,6 +83,7 @@ export default function App() {
       };
     }
 
+    handleCloseMovie();
     fetchMovies();
 
     // Cleanup function to abort fetch on unmount or query change
