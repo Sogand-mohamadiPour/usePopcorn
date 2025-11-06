@@ -25,28 +25,28 @@ import StarRating from "./starRating";
 //   },
 // ];
 
-const tempWatchedData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: "tt0088763",
-    Title: "Back to the Future",
-    Year: "1985",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
+// const tempWatchedData = [
+//   {
+//     imdbID: "tt1375666",
+//     Title: "Inception",
+//     Year: "2010",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+//     runtime: 148,
+//     imdbRating: 8.8,
+//     userRating: 10,
+//   },
+//   {
+//     imdbID: "tt0088763",
+//     Title: "Back to the Future",
+//     Year: "1985",
+//     Poster:
+//       "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
+//     runtime: 116,
+//     imdbRating: 8.5,
+//     userRating: 9,
+//   },
+// ];
 
 const average = (arr) => {
   if (!arr || arr.length === 0) return 0;
@@ -80,7 +80,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched(watched => watched.filter(movie => movie.imdbID !== id));
   }
-
 
   useEffect(function () {
     const controller = new AbortController();
@@ -315,99 +314,114 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   }
 
   useEffect(function () {
-    const controller = new AbortController();
-    async function getMovieDetails() {
-      try {
-        setIsLoading(true);
-        setError("");
-        setMovie({});
-        const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${key}&i=${selectedId}`,
-          { signal: controller.signal }
-        );
-        if (!res.ok)
-          throw new Error("something went wrong with showing movie details");
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie details not found");
-        setMovie(data);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          console.error(err.message);
-          setError(err.message);
-        }
+    function callback(e) {
+      if (e.code === "Escape") {
+        onCloseMovie();
+        console.log("CLOSING");
       }
-      finally { setIsLoading(false); }
     }
-    getMovieDetails();
-    return function cleanup() {
-      controller.abort();
-    }
-  }, [selectedId])
-
-  useEffect(function () {
-    if (title) {
-      document.title = `Movie | ${title}`;
-    }
+    document.addEventListener("keydown", callback);
+    
     return function () {
-      document.title = "usePopcorn";
+      document.removeEventListener('keydown', callback);
+    };
+  }, [onCloseMovie]);
+
+  
+useEffect(function () {
+  const controller = new AbortController();
+  async function getMovieDetails() {
+    try {
+      setIsLoading(true);
+      setError("");
+      setMovie({});
+      const res = await fetch(
+        `https://www.omdbapi.com/?apikey=${key}&i=${selectedId}`,
+        { signal: controller.signal }
+      );
+      if (!res.ok)
+        throw new Error("something went wrong with showing movie details");
+      const data = await res.json();
+      if (data.Response === "False") throw new Error("Movie details not found");
+      setMovie(data);
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        console.error(err.message);
+        setError(err.message);
+      }
     }
-  }, [title]);
+    finally { setIsLoading(false); }
+  }
+  getMovieDetails();
+  return function cleanup() {
+    controller.abort();
+  }
+}, [selectedId])
 
-  return (
-    <>
-      {isLoading && <Loader />}
-      {error && <ErrorMessage message={error} />}
-      {!isLoading && !error && (
-        <div className="details">
-          <header>
-            <button
-              className="btn-back"
-              onClick={onCloseMovie}>&larr;
-            </button>
-            {poster && <img src={poster} alt={`Poster of ${title} movie`} />}
-            <div className="details-overview">
-              <h2>{title}</h2>
-              <p>
-                {released} &bull; {runtime}
-              </p>
-              <p>{genre}</p>
-              <p>
-                <span>⭐</span>
-                {imdbRating} IMDB rating
-              </p>
-            </div>
-          </header>
+useEffect(function () {
+  if (title) {
+    document.title = `Movie | ${title}`;
+  }
+  return function () {
+    document.title = "usePopcorn";
+  }
+}, [title]);
 
-          <section>
-            <div className="rating">
-              {!isWatched ? (
-                <>
-                  <StarRating
-                    maxRating={10}
-                    size={24}
-                    onSetRating={setUserRating}
-                  />
-                  {userRating > 0 && (
-                    <button
-                      className="btn-add"
-                      onClick={() => { handleAdd() }}
-                    >
-                      Add to list
-                    </button>
-                  )}
-                </>
-              ) : (
-                <p>You rated this movie {watchedMovie?.userRating} <span>⭐</span></p>
-              )}
-            </div>
-            <p><em>{plot}</em></p>
-            <p>Starring {actors}</p>
-            <p>Directed by {director}</p>
-          </section>
-        </div>
-      )}
-    </>
-  )
+return (
+  <>
+    {isLoading && <Loader />}
+    {error && <ErrorMessage message={error} />}
+    {!isLoading && !error && (
+      <div className="details">
+        <header>
+          <button
+            className="btn-back"
+            onClick={onCloseMovie}>&larr;
+          </button>
+          {poster && <img src={poster} alt={`Poster of ${title} movie`} />}
+          <div className="details-overview">
+            <h2>{title}</h2>
+            <p>
+              {released} &bull; {runtime}
+            </p>
+            <p>{genre}</p>
+            <p>
+              <span>⭐</span>
+              {imdbRating} IMDB rating
+            </p>
+          </div>
+        </header>
+
+        <section>
+          <div className="rating">
+            {!isWatched ? (
+              <>
+                <StarRating
+                  maxRating={10}
+                  size={24}
+                  onSetRating={setUserRating}
+                />
+                {userRating > 0 && (
+                  <button
+                    className="btn-add"
+                    onClick={() => { handleAdd() }}
+                  >
+                    Add to list
+                  </button>
+                )}
+              </>
+            ) : (
+              <p>You rated this movie {watchedMovie?.userRating} <span>⭐</span></p>
+            )}
+          </div>
+          <p><em>{plot}</em></p>
+          <p>Starring {actors}</p>
+          <p>Directed by {director}</p>
+        </section>
+      </div>
+    )}
+  </>
+)
 }
 
 
