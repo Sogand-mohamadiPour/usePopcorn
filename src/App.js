@@ -89,15 +89,18 @@ export default function App() {
         setIsLoading(true);
         setError("");
         const res = await fetch(`https://www.omdbapi.com/?apikey=${key}&s=${query}`,
-           {signal: controller.signal});
+          { signal: controller.signal });
         if (!res.ok)
           throw new Error("something went wrong with fetching movies");
         const data = await res.json()
         if (data.Response === "False") throw new Error("Movie not found");
         setMovies(data.Search || [])
+        setError("");
       } catch (err) {
-        console.error(err.message);
-        setError(err.message);
+        if (err.name !== "AbortError") {
+          console.error(err.message);
+          setError(err.message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -105,13 +108,15 @@ export default function App() {
     if (query.length < 3) {
       setMovies([]);
       setError("");
-      return;
+      return function () {
+        controller.abort();
+      };
     }
     fetchMovies();
 
     return function () {
       controller.abort();
-    }
+    };
   }, [query]);
 
   return (
