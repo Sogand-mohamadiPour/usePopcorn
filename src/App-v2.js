@@ -20,8 +20,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  // End of state variables
 
-  
   // Handler functions
   function handleSelectMovie(id) {
     setSelectedId(selectedId => id === selectedId ? null : id);
