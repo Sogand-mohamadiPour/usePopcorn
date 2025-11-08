@@ -16,12 +16,16 @@ export default function App() {
   // State variables
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  // const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-  
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem('watched');
+    return storedValue ? JSON.parse(storedValue) : [];
+  });
+
   // Handler functions
   function handleSelectMovie(id) {
     setSelectedId(selectedId => id === selectedId ? null : id);
@@ -39,6 +43,10 @@ export default function App() {
     setWatched(watched => watched.filter(movie => movie.imdbID !== id));
   }
   // End of handler functions
+
+  useEffect(function () {
+    localStorage.setItem('watched', JSON.stringify(watched));
+  }, [watched]);
 
   // Fetch movies based on query
   useEffect(function () {
@@ -73,7 +81,7 @@ export default function App() {
         setIsLoading(false);
       }
     }
-    
+
     // Only fetch if query length is 3 or more
     if (query.length < 3) {
       setMovies([]);
@@ -295,11 +303,11 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [userRating, setUserRating] = useState('');
 
   // Check if the movie is already in the watched list
-  const isWatched = watched.some(movie => movie.imdbID === selectedId);
+  const isWatched = watched?.some(movie => movie.imdbID === selectedId) || false;
 
   // Get the watched movie details if it exists
   const watchedMovie =
-    watched.find(movie => movie.imdbID === selectedId)?.userRating;
+    watched?.find(movie => movie.imdbID === selectedId)?.userRating;
 
   // Destructure movie details
   const {
@@ -324,7 +332,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       Poster: poster,
       runtime: runtime ? Number(runtime.split(" ").at(0)) : 0,
       imdbRating: Number(imdbRating),
-      userRating,
+      userRating: Number(userRating),
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
@@ -461,9 +469,9 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 // Watched summary component
 function WatchedSummary({ watched }) {
   // Calculate averages for summary
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  const avgImdbRating = average(watched?.map((movie) => movie.imdbRating) || []);
+  const avgUserRating = average(watched?.map((movie) => movie.userRating) || []);
+  const avgRuntime = average(watched?.map((movie) => movie.runtime) || []);
 
   return (
     <>
@@ -473,7 +481,7 @@ function WatchedSummary({ watched }) {
         <div>
           <p>
             <span>#️⃣</span>
-            <span>{watched.length} movies</span>
+            <span>{watched?.length || 0} movies</span>
           </p>
           <p>
             <span>⭐️</span>
@@ -500,13 +508,13 @@ function WatchedMovieList({ watched, onDeleteWatched }) {
   return (
     <>
       <ul className="list">
-        {watched.map((movie) => (
+        {watched?.map((movie) => (
           <WatchedMovie
             movie={movie}
             key={movie.imdbID}
             onDeleteWatched={onDeleteWatched}
           />
-        ))}
+        )) || []}
       </ul>
     </>
   )
