@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useEffectEvent } from "react";
 import StarRating from "./starRating";
 
 // calculating average for movie details summary
@@ -201,6 +201,23 @@ function Logo() {
 
 // Search component
 function Serach({ query, setQuery }) {
+
+  // using useEffectEvent but still not on stable React // 
+  // const handleFocus = useEffectEvent(function () {
+  //   const el = document.querySelector(".search");
+  //   el.focus();
+  // });
+
+  // useEffect(function () {
+  //   handleFocus();
+  // }, []);
+///////////////////////////////////////////////////////////////////////////////
+
+  useEffect(function (){
+    const el = document.querySelector(".search");
+    el.focus();
+  }, []);
+
   return (
     <>
       <input
