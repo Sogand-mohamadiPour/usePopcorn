@@ -1,4 +1,4 @@
-import { useEffect, useState, useEffectEvent } from "react";
+import { useEffect, useState, useRef } from "react";
 import StarRating from "./starRating";
 
 // calculating average for movie details summary
@@ -201,6 +201,11 @@ function Logo() {
 
 // Search component
 function Serach({ query, setQuery }) {
+  const inputEL = useRef(null);
+
+  useEffect(function (){
+    inputEL.current.focus();
+  }, []);
 
   // using useEffectEvent but still not on stable React // 
   // const handleFocus = useEffectEvent(function () {
@@ -213,10 +218,12 @@ function Serach({ query, setQuery }) {
   // }, []);
 ///////////////////////////////////////////////////////////////////////////////
 
-  useEffect(function (){
-    const el = document.querySelector(".search");
-    el.focus();
-  }, []);
+  // useEffect(function (){
+  //   const el = document.querySelector(".search");
+  //   el.focus();
+  // }, []);
+
+
 
   return (
     <>
@@ -226,6 +233,7 @@ function Serach({ query, setQuery }) {
         placeholder="Search movies..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        ref={inputEL}
       />
     </>
   )
