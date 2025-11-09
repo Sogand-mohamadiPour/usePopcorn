@@ -203,9 +203,24 @@ function Logo() {
 function Serach({ query, setQuery }) {
   const inputEL = useRef(null);
 
-  useEffect(function (){
-    inputEL.current.focus();
+  // Focus on search box when component mounts
+  useEffect(function () {
+    inputEL.current?.focus();
   }, []);
+
+  useEffect(function () {
+    function callback(e) {
+      if(document.activeElement === inputEL.current) return;
+
+      if (e.code === "Enter") {
+        inputEL.current.focus();
+        setQuery("");
+      }
+    }
+
+    document.addEventListener('keydown', callback)
+    return () => document.removeEventListener('keydown', callback)
+  }, [setQuery]);
 
   // using useEffectEvent but still not on stable React // 
   // const handleFocus = useEffectEvent(function () {
@@ -216,7 +231,7 @@ function Serach({ query, setQuery }) {
   // useEffect(function () {
   //   handleFocus();
   // }, []);
-///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
 
   // useEffect(function (){
   //   const el = document.querySelector(".search");
