@@ -210,7 +210,7 @@ function Serach({ query, setQuery }) {
 
   useEffect(function () {
     function callback(e) {
-      if(document.activeElement === inputEL.current) return;
+      if (document.activeElement === inputEL.current) return;
 
       if (e.code === "Enter") {
         inputEL.current.focus();
@@ -342,6 +342,12 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [error, setError] = useState("");
   const [userRating, setUserRating] = useState('');
 
+  const conutRef = useRef(0);
+
+  useEffect(function () {
+    if(userRating) conutRef.current = conutRef.current + 1;
+  }, [userRating]);
+
   // Check if the movie is already in the watched list
   const isWatched = watched?.some(movie => movie.imdbID === selectedId) || false;
 
@@ -373,6 +379,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       runtime: runtime ? Number(runtime.split(" ").at(0)) : 0,
       imdbRating: Number(imdbRating),
       userRating: Number(userRating),
+      countRatingDecisions: conutRef.current,
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
