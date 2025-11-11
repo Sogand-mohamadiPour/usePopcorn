@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import StarRating from "./starRating";
+import { useMovies } from "./useMovies";
 
 // calculating average for movie details summary
 const average = (arr) => {
@@ -15,11 +16,9 @@ const key = 'a062c83d';
 export default function App() {
   // State variables
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  // const [watched, setWatched] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+
+  const { movies, isLoading, error } = useMovies(query, handleCloseMovie);
 
   const [watched, setWatched] = useState(function () {
     const storedValue = localStorage.getItem('watched');
@@ -49,56 +48,7 @@ export default function App() {
   }, [watched]);
 
   // Fetch movies based on query
-  useEffect(function () {
-    // AbortController to cancel fetch requests
-    const controller = new AbortController();
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        setError("");
 
-        const res = await fetch(`https://www.omdbapi.com/?apikey=${key}&s=${query}`,
-          { signal: controller.signal });
-
-        if (!res.ok)
-          throw new Error("something went wrong with fetching movies");
-        const data = await res.json()
-
-        if (data.Response === "False") throw new Error("Movie not found");
-        setMovies(data.Search || [])
-        setError("");
-      }
-
-      catch (err) {
-        // Ignore abort errors
-        if (err.name !== "AbortError") {
-          console.log(err.message);
-          setError(err.message);
-        }
-      }
-
-      finally {
-        setIsLoading(false);
-      }
-    }
-
-    // Only fetch if query length is 3 or more
-    if (query.length < 3) {
-      setMovies([]);
-      setError("");
-      return function () {
-        controller.abort();
-      };
-    }
-
-    handleCloseMovie();
-    fetchMovies();
-
-    // Cleanup function to abort fetch on unmount or query change
-    return function () {
-      controller.abort();
-    };
-  }, [query]);
 
 
   return (
@@ -345,7 +295,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const conutRef = useRef(0);
 
   useEffect(function () {
-    if(userRating) conutRef.current = conutRef.current + 1;
+    if (userRating) conutRef.current = conutRef.current + 1;
   }, [userRating]);
 
   // Check if the movie is already in the watched list
