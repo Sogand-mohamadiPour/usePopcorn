@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react";
 
-export function useMovies(query, callback) {
+export function useMovies(query) {
     // OMDB API key
     const key = 'a062c83d';
 
@@ -10,9 +10,6 @@ export function useMovies(query, callback) {
 
     // Custom hook logic to fetch and manage movies data
     useEffect(function () {
-         callback?.();
-
-
         // AbortController to cancel fetch requests
         const controller = new AbortController();
         async function fetchMovies() {
