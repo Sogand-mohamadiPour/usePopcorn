@@ -53,7 +53,7 @@ npm start
 ✅ **Fully responsive** layout (desktop, tablet, mobile)  
 ✅ Fetches all data using a public API  
 
---
+---
 
 ## 💬 Feedback & Contributions
 
