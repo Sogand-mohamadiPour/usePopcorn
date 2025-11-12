@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import StarRating from "./starRating";
 import { useMovies } from "./useMovies";
 import { useLocalStorageState } from "./useLocalStorageState";
+import { useKeyState } from "./useKeyState";
 
 // calculating average for movie details summary
 const average = (arr) => {
@@ -19,7 +20,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const { movies, isLoading, error } = useMovies(query);
-  const [watched , setWatched] = useLocalStorageState([], 'watched');
+  const [watched, setWatched] = useLocalStorageState([], 'watched');
 
   // Handler functions
   function handleSelectMovie(id) {
@@ -141,42 +142,11 @@ function Logo() {
 function Serach({ query, setQuery }) {
   const inputEL = useRef(null);
 
-  // Focus on search box when component mounts
-  useEffect(function () {
-    inputEL.current?.focus();
-  }, []);
-
-  useEffect(function () {
-    function callback(e) {
-      if (document.activeElement === inputEL.current) return;
-
-      if (e.code === "Enter") {
-        inputEL.current.focus();
-        setQuery("");
-      }
-    }
-
-    document.addEventListener('keydown', callback)
-    return () => document.removeEventListener('keydown', callback)
-  }, [setQuery]);
-
-  // using useEffectEvent but still not on stable React // 
-  // const handleFocus = useEffectEvent(function () {
-  //   const el = document.querySelector(".search");
-  //   el.focus();
-  // });
-
-  // useEffect(function () {
-  //   handleFocus();
-  // }, []);
-  ///////////////////////////////////////////////////////////////////////////////
-
-  // useEffect(function (){
-  //   const el = document.querySelector(".search");
-  //   el.focus();
-  // }, []);
-
-
+  useKeyState("Enter", function () {
+    if (document.activeElement === inputEL.current) return;
+    inputEL.current.focus();
+    setQuery("");
+  });
 
   return (
     <>
@@ -323,20 +293,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie();
   }
 
-  // Effect to handle Escape key for closing movie details
-  useEffect(function () {
-    // Callback function for keydown event
-    function callback(e) {
-      if (e.code === "Escape") {
-        onCloseMovie();
-      }
-    }
-    document.addEventListener("keydown", callback);
-
-    return function () {
-      document.removeEventListener('keydown', callback);
-    };
-  }, [onCloseMovie]);
+  useKeyState('Escape', onCloseMovie);
 
   // Effect to fetch movie details when selectedId changes
   useEffect(function () {
