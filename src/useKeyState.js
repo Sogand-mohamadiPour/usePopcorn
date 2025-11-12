@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 export function useKeyState(key, action) {
     useEffect(function () {
